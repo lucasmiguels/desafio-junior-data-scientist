@@ -180,26 +180,17 @@ WITH eventos_completos AS (
   UNION ALL
 
   -- Rock in Rio 2024
-  SELECT 
-    DATE('2024-09-13'),
-    DATE('2024-09-15'),
-    'Rock in Rio'
+  SELECT DATE('2024-09-13'), DATE('2024-09-15'), 'Rock in Rio'
 
   UNION ALL
 
   -- Rock in Rio 2024 - 2º fim de semana
-  SELECT 
-    DATE('2024-09-19'),
-    DATE('2024-09-22'),
-    'Rock in Rio'
+  SELECT DATE('2024-09-19'), DATE('2024-09-22'), 'Rock in Rio'
 
   UNION ALL
 
   -- Réveillon 2024-2025
-  SELECT 
-    DATE('2024-12-29') AS data_inicial,
-    DATE('2025-01-01') AS data_final,
-    'Réveillon' AS evento
+  SELECT DATE('2024-12-29'), DATE('2025-01-01'), 'Réveillon'
 )
 
 , chamados_por_periodo AS (
@@ -207,10 +198,10 @@ WITH eventos_completos AS (
     e.evento,
     COUNT(c.id_chamado) AS total_chamados,
     DATE_DIFF(e.data_final, e.data_inicial, DAY) + 1 AS duracao_dias
-  FROM `datario.adm_central_atendimento_1746.chamado` AS c
-  JOIN eventos_completos AS e
+  FROM eventos_completos AS e
+  LEFT JOIN `datario.adm_central_atendimento_1746.chamado` AS c
     ON DATE(c.data_inicio) BETWEEN e.data_inicial AND e.data_final
-  WHERE c.id_subtipo = "5071"
+    AND c.id_subtipo = "5071"
     AND DATE(c.data_inicio) BETWEEN '2022-01-01' AND '2024-12-31'
   GROUP BY e.evento, e.data_inicial, e.data_final
 )
@@ -222,15 +213,15 @@ SELECT
   ROUND(SUM(total_chamados) / SUM(duracao_dias), 2) AS media_diaria
 FROM chamados_por_periodo
 GROUP BY evento
-ORDER BY media_diaria DESC
+ORDER BY media_diaria DESC;
 LIMIT 1;
 
 -- RESPOSTA JSON
 -- [{
 --   "evento": "Rock in Rio",
 --   "total_chamados": "946",
---   "duracao_dias": "7",
---   "media_diaria": "135.14"
+--   "duracao_dias": "14",
+--   "media_diaria": "67.57"
 -- }]
 
 -- Q10) Compare as médias diárias de chamados abertos desse subtipo durante os eventos específicos (Reveillon, Carnaval e Rock in Rio) e a média diária de chamados abertos desse subtipo considerando todo o período de 01/01/2022 até 31/12/2024.
@@ -240,18 +231,18 @@ LIMIT 1;
 -- [{
 --   "evento": "Rock in Rio",
 --   "total_chamados": "946",
---   "duracao_dias": "7",
---   "media_diaria": "135.14"
--- }, {
---   "evento": "Carnaval",
---   "total_chamados": "252",
---   "duracao_dias": "4",
---   "media_diaria": "63.0"
+--   "duracao_dias": "14",
+--   "media_diaria": "67.57"
 -- }, {
 --   "evento": "Réveillon",
 --   "total_chamados": "280",
---   "duracao_dias": "7",
---   "media_diaria": "40.0"
+--   "duracao_dias": "10",
+--   "media_diaria": "28.0"
+-- }, {
+--   "evento": "Carnaval",
+--   "total_chamados": "252",
+--   "duracao_dias": "9",
+--   "media_diaria": "28.0"
 -- }]
 
 -- A query abaixo pode ser usada para obter a media diária durante todo o período. 
@@ -271,6 +262,6 @@ WHERE id_subtipo = "5071"
 --   "media_diaria": "51.81"
 -- }]
 
--- Os dados reforçam que eventos estão associados a aumentos nos chamados por perturbação, especialmente o Rock in Rio, mais do que eventos populares tradicionais.
--- Curiosamente, o Réveillon tem menos chamados por dia que a média geral. O que pode estar ligado a uma tolerância social maior ao barulho nesta data específica.
--- É um evento que pode ser explorado para pensar em ações de mitigação nos outros eventos.
+-- Os dados mostram que eventos não estão sempre associados a aumentos nos chamados por perturbação, mas vale destacar o Rock in Rio, com uma media maior do que eventos populares tradicionais.
+-- Curiosamente, o Réveillon e o Carnaval tem menos chamados por dia que a média geral. O que pode estar ligado a uma tolerância social maior ao barulho nestas datas.
+-- São eventos que podem ser explorados para pensar em ações de mitigação nos outros eventos.
