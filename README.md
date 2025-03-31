@@ -34,7 +34,6 @@ Este repositório contém minhas soluções para o desafio técnico, que tem com
    ```
 2. Configure o acesso ao BigQuery seguindo o tutorial oficial
 3. Abra os arquivos Jupyter em um ambiente apropriado. Os arquivos já estão em formato de relatório.
-   ```
 
 ### 3. Visualização no Power BI
 1. Abra o arquivo `dados_rio.pbix` no Power BI Desktop.
